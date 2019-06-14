@@ -1,0 +1,73 @@
+#!/usr/bin/env python3
+
+from argparse import ArgumentParser
+from selenium.webdriver.common.keys import Keys
+from selenium import webdriver
+
+import time
+
+
+class whatsapp_activity(object):
+
+    """Docstring for whatsapp_activity. """
+
+    def __init__(self, args):
+
+        self.url = "https://web.whatsapp.com"
+        self.driver_path = args.chromedriver
+        self.driver = webdriver.Chrome(self.driver_path)
+
+    def close_browser(self):
+
+        print("[!] close browser")
+        self.driver.close()
+
+    def main(self):
+
+        driver = self.driver
+        print("[+] starting browser")
+
+        print("[+] accessing the url: {}".format(self.url))
+        driver.get(self.url)
+
+        input(
+            "[*] Please scan the QR code with your smartphone, when finished press ENTER"
+        )
+
+        input("[*] Please select a contact, when finished press ENTER")
+        time.sleep(3)
+
+        start = False
+        while True:
+            try:
+                online = driver.find_element_by_xpath("//span[@class = '_315-i']")
+                if not start:
+                    date = time.strftime("%d-%m-%y %H:%M:%S")
+                    start = time.time()
+                time.sleep(0.5)
+
+            except KeyboardInterrupt:
+                self.close_browser()
+
+            except Exception:
+                if start:
+                    print(
+                        "[online] {} \033[33m{:.2f}s\033[0m".format(
+                            date, time.time() - start
+                        )
+                    )
+                    start = False
+
+
+if __name__ == "__main__":
+    ap = ArgumentParser()
+    ap.add_argument(
+        "--chromedriver",
+        metavar=("path_to_chromedriver"),
+        required=True,
+        help="Set chromedriver",
+    )
+    args = ap.parse_args()
+
+    app = whatsapp_activity(args)
+    app.main()
